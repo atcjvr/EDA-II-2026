@@ -1,0 +1,15 @@
+# Dependencias de Node.js
+node_modules/
+
+# Archivos generados por Vite
+dist/
+
+# Variables de entorno
+.env
+.env.local
+
+# Archivos de macOS
+.DS_Store
+
+# Registros de errores
+*.log
