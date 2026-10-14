@@ -1,16 +1,60 @@
-# React + Vite
+# Challenge 04 - Pilas (Stacks)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Estructura de Datos y Algoritmos II
 
-Currently, two official plugins are available:
+Aplicación desarrollada en JavaScript y React para implementar
+una estructura de datos tipo pila (Stack).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Objetivo
 
-## React Compiler
+Crear una pila de libros utilizando el principio LIFO
+(Last In, First Out), donde el último elemento agregado
+es el primero en retirarse.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Datos de los libros
 
-## Expanding the ESLint configuration
+Cada libro contiene cuatro propiedades:
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- Nombre
+- ISBN
+- Autor
+- Editorial
+
+## Funcionalidades
+
+- Agregar libros a la pila (Push).
+- Retirar libros de la pila (Pop).
+- Consultar el libro de la cima (Peek).
+- Verificar si la pila está vacía (isEmpty).
+- Consultar la cantidad de libros (Size).
+- Mostrar los libros en pantalla.
+- Vaciar completamente la pila.
+- Cargar cinco libros ficticios automáticamente.
+
+## Tecnologías utilizadas
+
+- JavaScript
+- React
+- Vite
+- HTML
+- CSS
+
+## Ejecución del proyecto
+
+1. Clonar el repositorio.
+2. Instalar las dependencias:
+
+   npm install
+
+3. Iniciar el servidor:
+
+   npm run dev
+
+4. Abrir la dirección local indicada por Vite.
+
+## Autor
+
+Jorge Luis Velásquez Reina
+Cod. 2240590
+
+Ingeniería Informática
