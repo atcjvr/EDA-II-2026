@@ -1,16 +1,70 @@
-# React + Vite
+# Estructura de Datos y Algoritmos II
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Challenge 05 - Colas (Queues)
 
-Currently, two official plugins are available:
+### Descripción
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Aplicación desarrollada en React que simula una fila de
+personas esperando atención en un cajero automático.
 
-## React Compiler
+Se implementa una estructura de datos tipo cola (Queue),
+utilizando el principio FIFO (First In, First Out).
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Esto significa que la primera persona en ingresar a la
+fila será la primera en recibir atención.
 
-## Expanding the ESLint configuration
+### Tecnologías utilizadas
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- JavaScript
+- React
+- Vite
+- HTML5
+- CSS3
+- Node.js
+
+### Funcionalidades
+
+1. Registrar personas en la fila.
+2. Asignar automáticamente la fecha de llegada.
+3. Registrar el monto que desea retirar cada persona.
+4. Mostrar las personas ordenadas por llegada.
+5. Atender a la primera persona de la fila.
+6. Consultar la siguiente persona sin retirarla.
+7. Mostrar la cantidad de personas esperando.
+8. Cargar datos ficticios para probar el funcionamiento.
+
+### Estructura de datos
+
+La cola se implementa mediante una clase Queue.
+
+Métodos principales:
+
+- enqueue(): Agregar una persona.
+- dequeue(): Retirar la primera persona.
+- front(): Consultar la primera persona.
+- isEmpty(): Verificar si la cola está vacía.
+- size(): Obtener la cantidad de elementos.
+- print(): Mostrar los elementos.
+
+### Ejecución del proyecto
+
+Instalar las dependencias:
+
+```bash
+npm install
+```
+
+Iniciar el servidor:
+
+```bash
+npm run dev
+```
+
+### Autor
+
+Jorge Luis Velásquez Reina
+Cod 2240590
+
+Ingeniería Informática
+
+Estructura de Datos y Algoritmos II
