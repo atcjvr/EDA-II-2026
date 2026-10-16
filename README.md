@@ -1,16 +1,102 @@
-# React + Vite
+# Challenge 08 - Árboles Binarios
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Estructura de Datos y Algoritmos II
 
-Currently, two official plugins are available:
+Proyecto desarrollado en React y JavaScript para implementar
+y visualizar un árbol binario de búsqueda (BST).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Objetivo
 
-## React Compiler
+Implementar un árbol binario de búsqueda que permita insertar,
+buscar y recorrer números, mostrando gráficamente su estructura.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tecnologías utilizadas
 
-## Expanding the ESLint configuration
+- JavaScript
+- React
+- Vite
+- HTML
+- CSS
+- Git y GitHub
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Funcionalidades
+
+1. Insertar números en el árbol binario.
+2. Buscar números existentes.
+3. Visualizar gráficamente los nodos del árbol.
+4. Realizar recorridos:
+   - InOrder
+   - PreOrder
+   - PostOrder
+5. Reiniciar el árbol.
+6. Mostrar mensajes de las operaciones realizadas.
+
+## Estructura del proyecto
+
+src/
+├── components/
+│   └── TreeVisualization.jsx
+├── structures/
+│   └── BinaryTree.js
+├── testBinaryTree.js
+├── App.jsx
+├── App.css
+├── index.css
+└── main.jsx
+
+## Ejecución
+
+Clonar el repositorio:
+
+```bash
+git clone https://github.com/atcjvr/EDA-II-2026.git
+```
+
+Ingresar al proyecto:
+
+```bash
+cd EDA-II-2026
+```
+
+Cambiar a la rama correspondiente:
+
+```bash
+git switch challenge-08
+```
+
+Instalar dependencias:
+
+```bash
+npm install
+```
+
+Ejecutar la aplicación:
+
+```bash
+npm run dev
+```
+
+Abrir la dirección indicada por Vite.
+
+## Pruebas realizadas
+
+Se verificaron las siguientes operaciones:
+
+- Inserción de nodos.
+- Búsqueda de números existentes e inexistentes.
+- Recorrido InOrder.
+- Recorrido PreOrder.
+- Recorrido PostOrder.
+- Reinicio del árbol.
+
+Todas las pruebas funcionales se realizaron correctamente.
+
+## Autor
+
+Jorge Luis Velásquez Reina
+Cod. 2240590
+Ingeniería Informática
+
+Universidad Autónoma de Occidente
+
+2026
