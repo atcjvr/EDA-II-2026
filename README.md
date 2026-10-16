@@ -1,16 +1,106 @@
-# React + Vite
+# Challenge 09 - Árbol N-ario
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Estructura de Datos y Algoritmos II
 
-Currently, two official plugins are available:
+### Descripción
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Este proyecto implementa un árbol N-ario (N-ary Tree)
+utilizando JavaScript y React.
 
-## React Compiler
+El objetivo es construir un menú lateral dinámico
+con diferentes opciones y submenús organizados
+mediante una estructura jerárquica.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Cada nodo contiene un título, un enlace,
+un componente asociado y una lista de nodos hijos.
 
-## Expanding the ESLint configuration
+## Tecnologías utilizadas
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- JavaScript
+- React
+- Vite
+- HTML
+- CSS
+- Node.js
+
+## Estructura de datos
+
+Se implementaron dos clases principales:
+
+### NaryNode
+
+Representa un nodo del árbol.
+
+Propiedades:
+- title
+- link
+- component
+- children
+
+### NaryTree
+
+Representa el árbol N-ario y permite realizar
+los siguientes recorridos:
+
+- DFS (Depth-First Search)
+- BFS (Breadth-First Search)
+
+## Funcionalidades
+
+- Menú lateral dinámico.
+- Menús y submenús desplegables.
+- Navegación entre componentes React.
+- Identificación de la opción seleccionada.
+- Recorridos DFS y BFS.
+- Diseño adaptable a diferentes pantallas.
+
+## Estructura del proyecto
+
+```text
+src/
+├── components/
+│   ├── Sidebar.jsx
+│   ├── MenuPage.jsx
+│   └── menuComponents.jsx
+├── data/
+│   └── menuData.js
+├── structures/
+│   └── NaryTree.js
+├── testNaryTree.js
+├── App.jsx
+├── App.css
+├── index.css
+└── main.jsx
+```
+
+## Ejecución
+
+Instalar dependencias:
+
+npm install
+
+Iniciar la aplicación:
+
+npm run dev
+
+Abrir en el navegador:
+
+http://localhost:5173/
+
+## Pruebas
+
+Ejecutar:
+
+node src/testNaryTree.js
+
+Se verifican los recorridos DFS y BFS,
+la raíz del árbol y los menús principales.
+
+## Autor
+
+Jorge Luis Velásquez Reina
+Cod. 2240590
+
+Ingeniería Informática
+
+Estructura de Datos y Algoritmos II
