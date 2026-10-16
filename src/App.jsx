@@ -1,66 +1,24 @@
 import { useState } from "react";
-import Graph from "./structures/Graph";
-import GraphView from "./components/GraphView";
+import SmartSearch from "./structures/SmartSearch";
 import "./App.css";
 
 // ======================================
 // DATOS INICIALES
 // ======================================
 
-function createInitialGraph() {
-  const graph = new Graph();
+function createInitialSearchEngine() {
+  const engine = new SmartSearch();
 
-  // Ciudades
-  graph.addNode({
-    id: "city-1",
-    name: "Cali",
-    type: "city",
-  });
+  engine.insert("air max", 90);
+  engine.insert("air force", 95);
+  engine.insert("air jordan", 85);
+  engine.insert("adidas boost", 80);
+  engine.insert("adidas superstar", 92);
+  engine.insert("nike revolution", 75);
+  engine.insert("nike pegasus", 88);
+  engine.insert("nike invincible", 97);
 
-  graph.addNode({
-    id: "city-2",
-    name: "Bogotá",
-    type: "city",
-  });
-
-  graph.addNode({
-    id: "city-3",
-    name: "Medellín",
-    type: "city",
-  });
-
-  // Personas
-  graph.addNode({
-    id: "person-1",
-    name: "Carlos Pérez",
-    age: 35,
-    type: "person",
-  });
-
-  graph.addNode({
-    id: "person-2",
-    name: "María Rodríguez",
-    age: 28,
-    type: "person",
-  });
-
-  graph.addNode({
-    id: "person-3",
-    name: "Andrés Gómez",
-    age: 42,
-    type: "person",
-  });
-
-  // Relaciones de residencia
-  graph.addEdge("person-1", "city-1");
-  graph.addEdge("person-2", "city-1");
-  graph.addEdge("person-3", "city-2");
-
-  // Relaciones de amistad
-  graph.addEdge("person-1", "person-2");
-  graph.addEdge("person-1", "person-3");
-
-  return graph;
+  return engine;
 }
 
 // ======================================
@@ -68,315 +26,150 @@ function createInitialGraph() {
 // ======================================
 
 function App() {
-  const [graph, setGraph] = useState(createInitialGraph);
+  const [engine, setEngine] = useState(
+    createInitialSearchEngine
+  );
 
-  // Registrar ciudad
-  const [cityName, setCityName] = useState("");
+  const [productName, setProductName] = useState("");
+  const [popularity, setPopularity] = useState("");
 
-  // Registrar persona
-  const [personName, setPersonName] = useState("");
-  const [personAge, setPersonAge] = useState("");
-  const [selectedCity, setSelectedCity] = useState("");
+  const [prefix, setPrefix] = useState("");
+  const [topK, setTopK] = useState(3);
 
-  // Crear amistad
-  const [friend1, setFriend1] = useState("");
-  const [friend2, setFriend2] = useState("");
-
-  // Consultar ciudad
-  const [searchCity, setSearchCity] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
+  const [results, setResults] = useState([]);
   const [hasSearched, setHasSearched] = useState(false);
+  const [searchedPrefix, setSearchedPrefix] = useState("");
 
-  // Mensajes
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("success");
 
-  // ======================================
-  // OBTENER CIUDADES Y PERSONAS
-  // ======================================
-
-  const cities = graph.nodes.filter(
-    (node) => node.type === "city"
-  );
-
-  const people = graph.nodes.filter(
-    (node) => node.type === "person"
-  );
+  const products = engine.getAllProducts();
 
   // ======================================
-  // ESTADÍSTICAS
+  // MENSAJES
   // ======================================
 
-  const connections = new Set();
-
-  Object.entries(graph.adjList).forEach(
-    ([source, targets]) => {
-      targets.forEach((target) => {
-        const key = JSON.stringify(
-          [source, target].sort()
-        );
-
-        connections.add(key);
-      });
-    }
-  );
-
-  const nodeById = new Map(
-    graph.nodes.map((node) => [node.id, node])
-  );
-
-  let residenceCount = 0;
-  let friendshipCount = 0;
-
-  connections.forEach((key) => {
-    const [source, target] = JSON.parse(key);
-
-    const node1 = nodeById.get(source);
-    const node2 = nodeById.get(target);
-
-    if (!node1 || !node2) return;
-
-    if (
-      node1.type === "person" &&
-      node2.type === "person"
-    ) {
-      friendshipCount++;
-    }
-
-    if (
-      (node1.type === "city" &&
-        node2.type === "person") ||
-      (node1.type === "person" &&
-        node2.type === "city")
-    ) {
-      residenceCount++;
-    }
-  });
-
-  // ======================================
-  // MOSTRAR MENSAJES
-  // ======================================
-
-  const showMessage = (
-    text,
-    type = "success"
-  ) => {
+  const showMessage = (text, type = "success") => {
     setMessage(text);
     setMessageType(type);
   };
 
   // ======================================
-  // ACTUALIZAR GRAFO
+  // REGISTRAR PRODUCTO
   // ======================================
 
-  const updateGraph = (callback) => {
-    setGraph((currentGraph) => {
-      const newGraph = new Graph();
+  const addProduct = (event) => {
+    event.preventDefault();
 
-      newGraph.nodes = currentGraph.nodes.map(
-        (node) => ({ ...node })
-      );
+    const name = productName.trim();
+    const score = Number(popularity);
 
-      newGraph.adjList = Object.fromEntries(
-        Object.entries(currentGraph.adjList).map(
-          ([key, value]) => [key, [...value]]
-        )
-      );
-
-      callback(newGraph);
-
-      return newGraph;
-    });
-  };
-
-  // ======================================
-  // AGREGAR CIUDAD
-  // ======================================
-
-  const addCity = (e) => {
-    e.preventDefault();
-
-    const name = cityName.trim();
-
-    if (!name) {
+    if (!name || popularity === "") {
       showMessage(
-        "Debes ingresar el nombre de la ciudad.",
+        "Debes ingresar el nombre y la popularidad.",
         "error"
       );
       return;
     }
-
-    const exists = cities.some(
-      (city) =>
-        city.name.toLowerCase() ===
-        name.toLowerCase()
-    );
-
-    if (exists) {
-      showMessage(
-        "Esta ciudad ya está registrada.",
-        "error"
-      );
-      return;
-    }
-
-    const id = `city-${crypto.randomUUID()}`;
-
-    updateGraph((newGraph) => {
-      newGraph.addNode({
-        id,
-        name,
-        type: "city",
-      });
-    });
-
-    setCityName("");
-
-    showMessage(
-      `La ciudad ${name} fue registrada correctamente.`
-    );
-  };
-
-  // ======================================
-  // AGREGAR PERSONA
-  // ======================================
-
-  const addPerson = (e) => {
-    e.preventDefault();
 
     if (
-      !personName.trim() ||
-      !personAge ||
-      !selectedCity
+      !Number.isFinite(score) ||
+      score < 0 ||
+      score > 100
     ) {
       showMessage(
-        "Completa todos los datos de la persona.",
+        "La popularidad debe estar entre 0 y 100.",
         "error"
       );
       return;
     }
 
-    const age = Number(personAge);
+    const exists = engine.search(name);
 
-    if (
-      !Number.isInteger(age) ||
-      age <= 0 ||
-      age > 120
-    ) {
-      showMessage(
-        "Ingresa una edad válida.",
-        "error"
+    // Crear una nueva instancia para actualizar React
+    const newEngine = new SmartSearch();
+
+    products.forEach((product) => {
+      newEngine.insert(
+        product.name,
+        product.popularity
       );
-      return;
-    }
-
-    const name = personName.trim();
-    const cityId = selectedCity;
-
-    const id = `person-${crypto.randomUUID()}`;
-
-    updateGraph((newGraph) => {
-      newGraph.addNode({
-        id,
-        name,
-        age,
-        type: "person",
-      });
-
-      newGraph.addEdge(id, cityId);
     });
 
-    setPersonName("");
-    setPersonAge("");
-    setSelectedCity("");
+    newEngine.insert(name, score);
 
+    setEngine(newEngine);
+
+    setProductName("");
+    setPopularity("");
+
+    // Limpiar resultados anteriores
+    setResults([]);
     setHasSearched(false);
-    setSearchResults([]);
 
     showMessage(
-      `${name} fue registrado correctamente.`
+      exists
+        ? `La popularidad de "${name}" fue actualizada.`
+        : `El producto "${name}" fue registrado correctamente.`
     );
   };
 
   // ======================================
-  // CREAR AMISTAD
+  // BUSCAR TOP K
   // ======================================
 
-  const addFriendship = (e) => {
-    e.preventDefault();
+  const searchProducts = (event) => {
+    event.preventDefault();
 
-    if (!friend1 || !friend2) {
+    const k = Number(topK);
+
+    if (
+      !Number.isInteger(k) ||
+      k <= 0
+    ) {
       showMessage(
-        "Selecciona las dos personas.",
+        "Debes ingresar una cantidad válida de resultados.",
         "error"
       );
       return;
     }
 
-    if (friend1 === friend2) {
-      showMessage(
-        "Una persona no puede ser amiga de sí misma.",
-        "error"
-      );
-      return;
-    }
+    const found = engine.searchTopK(prefix, k);
 
-    const alreadyFriends =
-      graph.adjList[friend1]?.includes(friend2);
-
-    if (alreadyFriends) {
-      showMessage(
-        "Estas personas ya tienen una relación de amistad.",
-        "error"
-      );
-      return;
-    }
-
-    const person1 = people.find(
-      (person) => person.id === friend1
-    );
-
-    const person2 = people.find(
-      (person) => person.id === friend2
-    );
-
-    updateGraph((newGraph) => {
-      newGraph.addEdge(friend1, friend2);
-    });
-
-    setFriend1("");
-    setFriend2("");
-
-    showMessage(
-      `Amistad creada entre ${person1.name} y ${person2.name}.`
-    );
-  };
-
-  // ======================================
-  // CONSULTAR PERSONAS POR CIUDAD
-  // ======================================
-
-  const searchPeople = (e) => {
-    e.preventDefault();
-
-    if (!searchCity) {
-      showMessage(
-        "Selecciona una ciudad para consultar.",
-        "error"
-      );
-      return;
-    }
-
-    const results =
-      graph.getPeopleByCity(searchCity);
-
-    setSearchResults(results);
+    setResults(found);
     setHasSearched(true);
+    setSearchedPrefix(prefix.trim());
 
     showMessage(
-      `Consulta realizada: ${results.length} persona(s) encontrada(s).`
+      `Búsqueda realizada: ${found.length} producto(s) encontrado(s).`
     );
   };
+
+  // ======================================
+  // ESTADÍSTICAS
+  // ======================================
+
+  const totalProducts = engine.size();
+
+  const averagePopularity =
+    totalProducts > 0
+      ? (
+          products.reduce(
+            (sum, product) =>
+              sum + product.popularity,
+            0
+          ) / totalProducts
+        ).toFixed(1)
+      : 0;
+
+  const mostPopular =
+    products.length > 0
+      ? products.reduce((best, product) =>
+          product.popularity > best.popularity
+            ? product
+            : best
+        )
+      : null;
 
   // ======================================
   // INTERFAZ
@@ -392,11 +185,11 @@ function App() {
           ESTRUCTURA DE DATOS Y ALGORITMOS II
         </span>
 
-        <h1>Challenge 10 - Grafos</h1>
+        <h1>Challenge 11 - Tries & Heaps</h1>
 
         <p className="subtitle">
-          Representación de ciudades, personas
-          y relaciones mediante grafos
+          Buscador inteligente de productos
+          con resultados ordenados por popularidad.
         </p>
       </header>
 
@@ -405,42 +198,42 @@ function App() {
       <div className="stats-grid">
 
         <div className="stat-card">
-          <span className="stat-icon">🏙️</span>
+          <span className="stat-icon">📦</span>
           <span className="stat-number">
-            {cities.length}
+            {totalProducts}
           </span>
           <span className="stat-label">
-            Ciudades
+            Productos registrados
           </span>
         </div>
 
         <div className="stat-card">
-          <span className="stat-icon">👥</span>
+          <span className="stat-icon">⭐</span>
           <span className="stat-number">
-            {people.length}
+            {averagePopularity}
           </span>
           <span className="stat-label">
-            Personas
+            Popularidad promedio
           </span>
         </div>
 
         <div className="stat-card">
-          <span className="stat-icon">🏠</span>
+          <span className="stat-icon">🏆</span>
           <span className="stat-number">
-            {residenceCount}
+            {mostPopular?.popularity ?? 0}
           </span>
           <span className="stat-label">
-            Residencias
+            Mayor popularidad
           </span>
         </div>
 
         <div className="stat-card">
-          <span className="stat-icon">🤝</span>
+          <span className="stat-icon">🔎</span>
           <span className="stat-number">
-            {friendshipCount}
+            {results.length}
           </span>
           <span className="stat-label">
-            Amistades
+            Resultados de búsqueda
           </span>
         </div>
 
@@ -450,35 +243,52 @@ function App() {
 
       <div className="forms-grid">
 
-        {/* REGISTRAR CIUDAD */}
+        {/* REGISTRAR PRODUCTO */}
 
         <section className="form-card">
 
           <div className="card-heading">
-            <span className="card-icon">🏙️</span>
-            <h2>Registrar ciudad</h2>
+            <span className="card-icon">📦</span>
+            <h2>Registrar producto</h2>
           </div>
 
           <p className="card-description">
-            Agrega una nueva ciudad al grafo.
+            Agrega un producto al Trie indicando
+            su nombre y popularidad.
           </p>
 
           <form
-            onSubmit={addCity}
+            onSubmit={addProduct}
             className="card-form"
           >
 
-            <label htmlFor="cityName">
-              Nombre de la ciudad
+            <label htmlFor="productName">
+              Nombre del producto
             </label>
 
             <input
-              id="cityName"
+              id="productName"
               type="text"
-              placeholder="Ej. Barranquilla"
-              value={cityName}
-              onChange={(e) =>
-                setCityName(e.target.value)
+              placeholder="Ej. Puma running"
+              value={productName}
+              onChange={(event) =>
+                setProductName(event.target.value)
+              }
+            />
+
+            <label htmlFor="popularity">
+              Popularidad (0 a 100)
+            </label>
+
+            <input
+              id="popularity"
+              type="number"
+              min="0"
+              max="100"
+              placeholder="Ej. 89"
+              value={popularity}
+              onChange={(event) =>
+                setPopularity(event.target.value)
               }
             />
 
@@ -486,302 +296,69 @@ function App() {
               type="submit"
               className="btn-green"
             >
-              + Agregar ciudad
+              + Registrar producto
             </button>
 
           </form>
 
         </section>
 
-        {/* REGISTRAR PERSONA */}
-
-        <section className="form-card">
-
-          <div className="card-heading">
-            <span className="card-icon">👤</span>
-            <h2>Registrar persona</h2>
-          </div>
-
-          <p className="card-description">
-            Registra una persona y su ciudad
-            de residencia.
-          </p>
-
-          <form
-            onSubmit={addPerson}
-            className="card-form"
-          >
-
-            <label htmlFor="personName">
-              Nombre completo
-            </label>
-
-            <input
-              id="personName"
-              type="text"
-              placeholder="Ej. Juan Martínez"
-              value={personName}
-              onChange={(e) =>
-                setPersonName(e.target.value)
-              }
-            />
-
-            <div className="form-two-columns">
-
-              <div className="field-group">
-
-                <label htmlFor="personAge">
-                  Edad
-                </label>
-
-                <input
-                  id="personAge"
-                  type="number"
-                  min="1"
-                  max="120"
-                  placeholder="Edad"
-                  value={personAge}
-                  onChange={(e) =>
-                    setPersonAge(e.target.value)
-                  }
-                />
-
-              </div>
-
-              <div className="field-group">
-
-                <label htmlFor="selectedCity">
-                  Ciudad
-                </label>
-
-                <select
-                  id="selectedCity"
-                  value={selectedCity}
-                  onChange={(e) =>
-                    setSelectedCity(e.target.value)
-                  }
-                >
-
-                  <option value="">
-                    Seleccionar ciudad
-                  </option>
-
-                  {cities.map((city) => (
-                    <option
-                      key={city.id}
-                      value={city.id}
-                    >
-                      {city.name}
-                    </option>
-                  ))}
-
-                </select>
-
-              </div>
-
-            </div>
-
-            <button
-              type="submit"
-              className="btn-green"
-            >
-              + Agregar persona
-            </button>
-
-          </form>
-
-        </section>
-
-        {/* CREAR AMISTAD */}
-
-        <section className="form-card">
-
-          <div className="card-heading">
-            <span className="card-icon">🤝</span>
-            <h2>Crear relación de amistad</h2>
-          </div>
-
-          <p className="card-description">
-            Conecta dos personas mediante
-            una relación de amistad.
-          </p>
-
-          <form
-            onSubmit={addFriendship}
-            className="card-form"
-          >
-
-            <label htmlFor="friend1">
-              Primera persona
-            </label>
-
-            <select
-              id="friend1"
-              value={friend1}
-              onChange={(e) =>
-                setFriend1(e.target.value)
-              }
-            >
-
-              <option value="">
-                Seleccionar persona
-              </option>
-
-              {people.map((person) => (
-                <option
-                  key={person.id}
-                  value={person.id}
-                >
-                  {person.name}
-                </option>
-              ))}
-
-            </select>
-
-            <label htmlFor="friend2">
-              Segunda persona
-            </label>
-
-            <select
-              id="friend2"
-              value={friend2}
-              onChange={(e) =>
-                setFriend2(e.target.value)
-              }
-            >
-
-              <option value="">
-                Seleccionar persona
-              </option>
-
-              {people.map((person) => (
-                <option
-                  key={person.id}
-                  value={person.id}
-                >
-                  {person.name}
-                </option>
-              ))}
-
-            </select>
-
-            <button
-              type="submit"
-              className="btn-yellow"
-            >
-              🤝 Crear amistad
-            </button>
-
-          </form>
-
-        </section>
-
-        {/* CONSULTAR PERSONAS */}
+        {/* BUSCADOR */}
 
         <section className="form-card">
 
           <div className="card-heading">
             <span className="card-icon">🔎</span>
-            <h2>Consultar personas por ciudad</h2>
+            <h2>Buscador inteligente</h2>
           </div>
 
           <p className="card-description">
-            Consulta las personas que residen
-            en una ciudad determinada.
+            Busca productos por prefijo y selecciona
+            cuántos resultados populares deseas obtener.
           </p>
 
           <form
-            onSubmit={searchPeople}
+            onSubmit={searchProducts}
             className="card-form"
           >
 
-            <label htmlFor="searchCity">
-              Ciudad a consultar
+            <label htmlFor="prefix">
+              Prefijo de búsqueda
             </label>
 
-            <select
-              id="searchCity"
-              value={searchCity}
-              onChange={(e) => {
-                setSearchCity(e.target.value);
-                setHasSearched(false);
-                setSearchResults([]);
-              }}
-            >
+            <input
+              id="prefix"
+              type="text"
+              placeholder="Ej. air, adidas, nike"
+              value={prefix}
+              onChange={(event) =>
+                setPrefix(event.target.value)
+              }
+            />
 
-              <option value="">
-                Seleccionar ciudad
-              </option>
+            <label htmlFor="topK">
+              Cantidad de resultados (Top K)
+            </label>
 
-              {cities.map((city) => (
-                <option
-                  key={city.id}
-                  value={city.id}
-                >
-                  {city.name}
-                </option>
-              ))}
-
-            </select>
+            <input
+              id="topK"
+              type="number"
+              min="1"
+              step="1"
+              value={topK}
+              onChange={(event) =>
+                setTopK(event.target.value)
+              }
+            />
 
             <button
               type="submit"
               className="btn-blue"
             >
-              🔎 Consultar personas
+              🔎 Buscar Top K
             </button>
 
           </form>
-
-          {/* RESULTADOS */}
-
-          {hasSearched && (
-            <div className="search-results">
-
-              <h3>
-                Resultados de la consulta
-              </h3>
-
-              {searchResults.length === 0 ? (
-
-                <p className="empty-results">
-                  No se encontraron personas
-                  en esta ciudad.
-                </p>
-
-              ) : (
-
-                <div className="results-list">
-
-                  {searchResults.map((person) => (
-
-                    <div
-                      className="result-person"
-                      key={person.id}
-                    >
-
-                      <span>👤</span>
-
-                      <div>
-                        <strong>
-                          {person.name}
-                        </strong>
-
-                        <small>
-                          {person.age} años
-                        </small>
-                      </div>
-
-                    </div>
-
-                  ))}
-
-                </div>
-
-              )}
-
-            </div>
-          )}
 
         </section>
 
@@ -790,16 +367,12 @@ function App() {
       {/* MENSAJES */}
 
       {message && (
-
         <div
           className={`status-message ${messageType}`}
           role="status"
         >
-
           <span>
-            {messageType === "success"
-              ? "✓"
-              : "⚠"}
+            {messageType === "success" ? "✓" : "⚠"}
           </span>
 
           <span>{message}</span>
@@ -812,76 +385,132 @@ function App() {
           >
             ×
           </button>
-
         </div>
-
       )}
 
-      {/* VISUALIZACIÓN DEL GRAFO */}
+      {/* RESULTADOS */}
 
-      <section className="graph-section">
+      <section className="results-section">
 
-        <div className="graph-header">
-
-          <h2>Visualización del grafo</h2>
+        <div className="section-heading">
+          <h2>Resultados de búsqueda</h2>
 
           <p>
-            Representación interactiva de
-            ciudades, personas y conexiones.
+            Productos seleccionados mediante Trie
+            y Min Heap.
           </p>
-
         </div>
 
-        {/* LEYENDA */}
-
-        <div className="graph-legend">
-
-          <div className="legend-item">
-            <span className="legend-dot city-dot" />
-            <span>Ciudades</span>
+        {!hasSearched ? (
+          <div className="empty-state">
+            <span>🔎</span>
+            <h3>Realiza una búsqueda</h3>
+            <p>
+              Escribe un prefijo y selecciona
+              cuántos productos deseas consultar.
+            </p>
           </div>
-
-          <div className="legend-item">
-            <span className="legend-dot person-dot" />
-            <span>Personas</span>
+        ) : results.length === 0 ? (
+          <div className="empty-state">
+            <span>📭</span>
+            <h3>Sin resultados</h3>
+            <p>
+              No encontramos productos con el prefijo
+              {" "}
+              <strong>
+                {searchedPrefix || "(vacío)"}
+              </strong>.
+            </p>
           </div>
+        ) : (
+          <div className="results-list">
 
-          <div className="legend-item">
-            <span className="legend-line residence-line" />
-            <span>Residencia</span>
+            {results.map((product, index) => (
+              <div
+                className="result-card"
+                key={product.name}
+              >
+
+                <div className="result-position">
+                  #{index + 1}
+                </div>
+
+                <div className="result-content">
+
+                  <div className="result-header">
+                    <h3>{product.name}</h3>
+
+                    <span className="popularity-value">
+                      {product.popularity}/100
+                    </span>
+                  </div>
+
+                  <div className="popularity-track">
+                    <div
+                      className="popularity-fill"
+                      style={{
+                        width: `${Math.min(
+                          product.popularity,
+                          100
+                        )}%`,
+                      }}
+                    />
+                  </div>
+
+                </div>
+
+              </div>
+            ))}
+
           </div>
+        )}
 
-          <div className="legend-item">
-            <span className="legend-line friendship-line" />
-            <span>Amistad</span>
-          </div>
+      </section>
 
+      {/* PRODUCTOS REGISTRADOS */}
+
+      <section className="products-section">
+
+        <div className="section-heading">
+          <h2>Productos registrados en el Trie</h2>
+
+          <p>
+            Catálogo completo de productos almacenados.
+          </p>
         </div>
 
-        {/* ESTADO DEL GRAFO */}
+        <div className="products-table-wrapper">
+          <table className="products-table">
 
-        <div className="graph-summary">
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Popularidad</th>
+              </tr>
+            </thead>
 
-          <span>
-            Nodos: <strong>{graph.nodes.length}</strong>
-          </span>
+            <tbody>
+              {products.map((product) => (
+                <tr key={product.name}>
+                  <td>{product.name}</td>
+                  <td>
+                    <span className="table-popularity">
+                      {product.popularity}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
 
-          <span>
-            Conexiones: <strong>{connections.size}</strong>
-          </span>
-
+          </table>
         </div>
-
-        {/* GRAFO ORIGINAL */}
-
-        <GraphView graph={graph} />
 
       </section>
 
       {/* PIE DE PÁGINA */}
 
       <footer className="app-footer">
-        Challenge 10 · Grafos ·
+        Challenge 11 · Tries & Heaps ·
         Estructura de Datos y Algoritmos II
       </footer>
 

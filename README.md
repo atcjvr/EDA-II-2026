@@ -1,100 +1,125 @@
-# Challenge 10 - Grafos
+# Challenge 11 – Tries & Heaps
 
 ## Estructura de Datos y Algoritmos II
 
 ### Descripción
 
-Este proyecto implementa una estructura de datos de tipo grafo
-utilizando JavaScript y React.
+Este proyecto consiste en el desarrollo de un buscador inteligente de productos utilizando las estructuras de datos Trie y Min Heap, implementadas en JavaScript e integradas en una interfaz desarrollada con React.
 
-El objetivo es representar las relaciones existentes entre
-ciudades y personas, permitiendo registrar nuevos elementos,
-establecer conexiones y consultar información.
-
-El grafo se implementa mediante listas de adyacencia,
-facilitando la representación de las relaciones entre nodos.
+El objetivo es permitir el registro de productos, realizar búsquedas por prefijo y mostrar los K productos con mayor popularidad.
 
 ## Tecnologías utilizadas
 
 - JavaScript
 - React
 - Vite
-- React Flow
 - CSS
+- Node.js
 - Git y GitHub
 
-## Estructura de datos
+## Estructuras de datos implementadas
 
-Se utiliza un grafo no dirigido compuesto por dos tipos de nodos:
+### Trie
 
-**Ciudades:** representan las ciudades registradas.
+El Trie es una estructura de datos basada en un árbol que permite almacenar palabras mediante sus caracteres.
 
-**Personas:** representan personas con nombre y edad.
+En este proyecto se utiliza para registrar productos y realizar búsquedas por prefijo.
 
-Las conexiones representan dos tipos de relaciones:
+**Operaciones implementadas:**
 
-1. Residencia: conecta una persona con su ciudad.
-2. Amistad: conecta dos personas.
+- `insert()`: registra productos.
+- `search()`: realiza búsquedas exactas.
+- `searchByPrefix()`: busca productos por prefijo.
+- `getAllProducts()`: obtiene todos los productos.
+- `size()`: consulta la cantidad de productos.
+
+### Min Heap
+
+El Min Heap es una estructura basada en un árbol binario completo, donde cada nodo padre tiene una prioridad menor o igual que sus hijos.
+
+En este proyecto se utiliza para seleccionar los K productos más populares.
+
+**Operaciones implementadas:**
+
+- `push()`: inserta elementos.
+- `pop()`: elimina el elemento mínimo.
+- `peek()`: consulta el elemento mínimo.
+- `heapify()`: organiza los elementos.
+- `percolateUp()`: reorganiza hacia arriba.
+- `percolateDown()`: reorganiza hacia abajo.
+
+## Funcionamiento del buscador inteligente
+
+La aplicación combina ambas estructuras mediante la clase `SmartSearch`.
+
+El proceso funciona de la siguiente manera:
+
+1. El usuario registra productos con un nombre y un valor de popularidad.
+2. Los productos se almacenan en un Trie.
+3. El usuario introduce un prefijo de búsqueda.
+4. El Trie encuentra los productos que coinciden con ese prefijo.
+5. El Min Heap selecciona los K productos con mayor popularidad.
+6. Los resultados se presentan ordenados de mayor a menor popularidad.
+
+### Ejemplo
+
+Productos registrados:
+
+| Producto | Popularidad |
+|---|---:|
+| Air Max | 90 |
+| Air Force | 95 |
+| Air Jordan | 85 |
+| Adidas Boost | 80 |
+
+Búsqueda:
+
+**Prefijo:** `air`  
+**K:** `2`
+
+Resultados:
+
+1. Air Force – 95
+2. Air Max – 90
 
 ## Funcionalidades
 
-### Registrar ciudades
+- Registrar nuevos productos.
+- Actualizar la popularidad de productos existentes.
+- Buscar productos mediante prefijos.
+- Seleccionar la cantidad de resultados (Top K).
+- Mostrar resultados ordenados por popularidad.
+- Visualizar barras de popularidad.
+- Consultar el catálogo de productos registrados.
+- Mostrar estadísticas dinámicas.
 
-Permite agregar nuevas ciudades al grafo.
+## Organización del proyecto
 
-### Registrar personas
+```text
+src/
+├── structures/
+│   ├── Trie.js
+│   ├── MinHeap.js
+│   └── SmartSearch.js
+├── testTrie.js
+├── testHeap.js
+├── testSmartSearch.js
+├── App.jsx
+├── App.css
+└── main.jsx
+```
 
-Permite registrar personas indicando:
+## Pruebas realizadas
 
-- Nombre.
-- Edad.
-- Ciudad de residencia.
+Se realizaron pruebas individuales para verificar el funcionamiento de cada estructura.
 
-Al registrar una persona, se crea automáticamente una
-conexión con su ciudad.
+**Trie:** inserción, búsqueda exacta, búsqueda por prefijo y conteo de productos.
 
-### Crear relaciones de amistad
+**Min Heap:** inserción, consulta del mínimo, extracción y reorganización.
 
-Permite conectar dos personas mediante una relación
-de amistad.
+**SmartSearch:** búsqueda de los K productos más populares, prefijos inexistentes y validación de valores de K.
 
-El sistema evita crear relaciones duplicadas y
-relaciones de una persona consigo misma.
-
-### Consultar personas por ciudad
-
-Permite seleccionar una ciudad y visualizar las
-personas que residen en ella.
-
-### Visualización del grafo
-
-Se utiliza React Flow para representar gráficamente
-los nodos y sus conexiones.
-
-Los elementos se identifican mediante colores:
-
-- Azul: ciudades.
-- Verde: personas.
-- Líneas azules: relaciones de residencia.
-- Líneas amarillas curvas: relaciones de amistad.
-
-### Estadísticas
-
-La aplicación muestra información actualizada sobre:
-
-- Cantidad de ciudades.
-- Cantidad de personas.
-- Relaciones de residencia.
-- Relaciones de amistad.
-
-## Organización del código
-
-La aplicación está organizada en los siguientes archivos:
-
-- `src/App.jsx`: interfaz principal y operaciones.
-- `src/App.css`: estilos de la aplicación.
-- `src/structures/Graph.js`: implementación del grafo.
-- `src/components/GraphView.jsx`: visualización gráfica.
+También se verificó el funcionamiento de la interfaz React.
 
 ## Ejecución del proyecto
 
@@ -116,43 +141,33 @@ Instalar dependencias:
 npm install
 ```
 
-Ejecutar el servidor:
+Ejecutar la aplicación:
 
 ```bash
 npm run dev
 ```
 
-Abrir la dirección que muestra Vite, normalmente:
+Abrir la dirección indicada por Vite, normalmente:
 
 http://localhost:5173/
 
-## Conceptos aplicados
+Para ejecutar las pruebas:
 
-Durante el desarrollo se aplicaron conceptos de:
+```bash
+node src/testTrie.js
+node src/testHeap.js
+node src/testSmartSearch.js
+```
 
-- Grafos.
-- Nodos y aristas.
-- Listas de adyacencia.
-- Grafos no dirigidos.
-- Relaciones entre entidades.
-- Recorrido y consulta de conexiones.
-- Manejo del estado en React.
-- Visualización interactiva de estructuras de datos.
+**Nota:** para consultar esta implementación se debe seleccionar la rama `challenge-11`.
 
-## Conclusión
+## Conclusiones
 
-El desarrollo del Challenge 10 permitió comprender cómo
-los grafos representan relaciones entre diferentes
-elementos de un sistema.
+El desarrollo del Challenge 11 permitió comprender cómo diferentes estructuras de datos pueden trabajar conjuntamente para resolver un problema.
 
-Mediante la implementación de nodos y aristas,
-fue posible construir una aplicación que administra
-ciudades, personas y relaciones de amistad.
+El Trie facilita la búsqueda de productos mediante prefijos, mientras que el Min Heap permite seleccionar los resultados más populares.
 
-La integración con React permitió desarrollar una
-interfaz interactiva que facilita la comprensión
-visual del funcionamiento de esta estructura de datos.
-
+La integración de ambas estructuras con React permitió desarrollar una aplicación interactiva, aplicando los conocimientos adquiridos durante el curso de Estructura de Datos y Algoritmos II.
 
 ---
 
@@ -161,9 +176,9 @@ visual del funcionamiento de esta estructura de datos.
 **Nombre:** Jorge Luis Velásquez Reina  
 **Código estudiantil:** 2240590  
 **Programa académico:** Ingeniería Informática  
-**Asignatura:** Estructura de Datos y Algoritmos II  
 **Universidad:** Universidad Autónoma de Occidente  
-**Challenge:** 10 – Grafos  
-**Año:** 2026  
+**Asignatura:** Estructura de Datos y Algoritmos II  
+**Challenge:** 11 – Tries & Heaps  
+**Año:** 2026
 
 ---
